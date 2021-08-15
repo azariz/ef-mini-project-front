@@ -32,9 +32,6 @@ class App extends React.Component {
 
   onApiSendSuccess = ({ start, end, duration, title }) => {
     alert("Meeting ajouté avec succès.")
-    console.log("--------")
-    console.log(start, end, duration, title)
-    console.log("--------")
     this.setState({
       events: [
         ...this.state.events,
@@ -55,9 +52,9 @@ class App extends React.Component {
   sendToApi = ({ start, end, duration, title }) => {
     // construct content to send to api
     const postPayload = {
-      event_start: start,
+      event_start: start,  // note, be sure that this is always timeformatZ (GMT)
       event_duration: duration,
-      event_title: title
+      event_title: title,
     }
 
     // construct request
@@ -92,10 +89,13 @@ class App extends React.Component {
   handleSelect = ({ start, end }) => {
     const title = window.prompt('Objet du meeting ...')
     let duration = 0
-    if (title)
+    console.log('title = ')
+    console.log(title)
+    if (title) {
       // construct content to send to api
       duration = (end-start)/(60*1000)  // duration in minutes
       this.sendToApi({ start, end, duration, title })
+    }
   }
 
 
