@@ -26,13 +26,32 @@ class App extends React.Component {
   };
 
 
+  /* onApiSendSuccess
+  * --
+  * update interface */
+
+  onApiSendSuccess = ({ start, end, duration, title }) => {
+    alert("Meeting ajouté avec succès.")
+    this.setState({
+      events: [
+        ...this.state.events,
+        {
+          start,
+          end,
+          title,
+        },
+      ],
+    })
+  }
+
+
   /* SendToApi
    * --
    * construct and send payload from calendar to backend API */
 
-  sendToApi = ({ start, duration, title }) => {
+  sendToApi = ({ start, end, duration, title }) => {
     // construct content to send to api
-    const postBody = {
+    const postPayload = {
       event_start: start,
       event_duration: duration,
       event_title: title
@@ -42,7 +61,7 @@ class App extends React.Component {
     const requestMetadata = {
         method: 'POST',
         headers: {  'Content-Type': 'application/json' },
-        body: JSON.stringify(postBody)
+        body: JSON.stringify(postPayload)
     };
 
     // request API
@@ -50,15 +69,14 @@ class App extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-          console.log('Response OK from API.')
           console.log(result)
-          return result
+          this.onApiSendSuccess({ start, end, duration, title })
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow exceptions.
         (error) => {
-          alert("Error from the API. Check console.")
           console.error(error)
+          alert("Error from the API. Check console.")
           return false
         }
       )
