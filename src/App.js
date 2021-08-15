@@ -110,6 +110,7 @@ class App extends React.Component {
           selectable
           localizer={localizer}
           events={this.state.events}
+          views={['week']}
           defaultView={Views.WEEK}  // choose WEEK view
           defaultDate={new Date()}  // start on today
           onSelectEvent={event => alert(event.title)}
