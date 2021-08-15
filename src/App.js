@@ -1,47 +1,58 @@
+/* Author : Amine Azariz
+ * Licence
+ * Version 
+ * --------------------------------------------------------------------------- */
+
 import React from 'react'
 import { Calendar, Views, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 
-/* CSS */
+/* CSS
+ * --------------------------------------------------------------------------- */
 import "./App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 /* GLOBALS
- * @TODO: Use a separate config, env config or database for settings */
-const API_URI = "https://api.example.com/"
+ * @TODO: better use a proper way to define settings (file, env, db)
+ * --------------------------------------------------------------------------- */
+const API_URI = "http://127.0.0.1:5555/api/events/"
 
+
+/* App Component
+ * --------------------------------------------------------------------------- */
 class App extends React.Component {
   state = {
     events: []
   };
 
-  sendToApi = ({ start, end, title }) => {
-    /* construct content to send to api */
+
+  /* SendToApi
+   * --
+   * construct and send payload from calendar to backend API */
+
+  sendToApi = ({ start, duration, title }) => {
+    // construct content to send to api
     const postBody = {
       event_start: start,
-      event_end: end,
+      event_duration: duration,
       event_title: title
     }
-    console.log(start, end, title)
-    console.log(postBody)
 
-    /* construct request */
+    // construct request
     const requestMetadata = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {  'Content-Type': 'application/json' },
         body: JSON.stringify(postBody)
     };
 
-    /* request API */
+    // request API
     fetch(API_URI, requestMetadata)
       .then(res => res.json())
       .then(
         (result) => {
           console.log('Response OK from API.')
           console.log(result)
-          return true
+          return result
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow exceptions.
@@ -53,21 +64,22 @@ class App extends React.Component {
       )
   }
 
+
+  /* HandleSelect
+   * timeslot selectoion handler */
+
   handleSelect = ({ start, end }) => {
     const title = window.prompt('Objet du meeting ...')
+    let duration = 0
     if (title)
-      if (this.sendToApi({ start, end, title }) === true)
-        this.setState({
-          events: [
-            ...this.state.events,
-            {
-              start,
-              end,
-              title,
-            },
-          ],
-        })
+      // construct content to send to api
+      duration = (end-start)/(60*1000)  // duration in minutes
+      this.sendToApi({ start, duration, title })
   }
+
+
+  /* Render
+   * component renderer */
 
   render() {
     const localizer = momentLocalizer(moment)
