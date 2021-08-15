@@ -32,6 +32,9 @@ class App extends React.Component {
 
   onApiSendSuccess = ({ start, end, duration, title }) => {
     alert("Meeting ajouté avec succès.")
+    console.log("--------")
+    console.log(start, end, duration, title)
+    console.log("--------")
     this.setState({
       events: [
         ...this.state.events,
@@ -92,7 +95,7 @@ class App extends React.Component {
     if (title)
       // construct content to send to api
       duration = (end-start)/(60*1000)  // duration in minutes
-      this.sendToApi({ start, duration, title })
+      this.sendToApi({ start, end, duration, title })
   }
 
 
